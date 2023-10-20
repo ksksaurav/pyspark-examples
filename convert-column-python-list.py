@@ -4,18 +4,50 @@ author SparkByExamples.com
 """
 
 from pyspark.sql import SparkSession
-spark = SparkSession.builder.master("local[1]") \
-                    .appName('SparkByExamples.com') \
-                    .getOrCreate()
+import os
+import sys
 
-data = [("James","Smith","USA","CA"),("Michael","Rose","USA","NY"), \
-    ("Robert","Williams","USA","CA"),("Maria","Jones","USA","FL") \
-  ]
-columns=["firstname","lastname","country","state"]
-df=spark.createDataFrame(data=data,schema=columns)
+
+os.environ['PYSPARK_PYTHON'] = sys.executable
+os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
+
+spark: SparkSession
+spark = SparkSession. builder.master("local[1]")\
+    .appName("SparkByExamples.com")\
+    .getOrCreate()
+
+#
+# spark = SparkSession.builder.master("local[2]") \
+#                     .appName('SparkByExamples.com') \
+#                     .getOrCreate()
+
+# data = [("James","Smith","USA","CA"),("Michael","Rose","USA","NY"), \
+#     ("Robert","Williams","USA","CA"),("Maria","Jones","USA","FL") \
+#   ]
+
+data = [("James","Smith","USA","CA"),("Michael","Rose","USA","NY"),
+        ("Robert","Williams","USA","CA"),("Maria","Jones","USA","FL")
+        ]
+
+# columns=["firstname","lastname","country","state"]
+
+columns = ['firstname',"lastname","country","state"]
+
+df = spark.createDataFrame(data=data,schema=columns);
 df.show()
 print(df.collect())
 
+# df=spark.createDataFrame(data=data,schema=columns)
+# df.show()
+# print(df.collect())
+
+states = df.rdd.map(lambda  x : x[3]).collect();
+type(states)
+print(states)
+from collections import OrderedDict
+res = list(OrderedDict.fromkeys(states))
+print(res)
+'''
 states1=df.rdd.map(lambda x: x[3]).collect()
 print(states1)
 #['CA', 'NY', 'CA', 'FL']
@@ -46,3 +78,6 @@ print(states6)
 pandDF=df.select(df.state,df.firstname).toPandas()
 print(list(pandDF['state']))
 print(list(pandDF['firstname']))
+
+
+'''
