@@ -3,38 +3,69 @@
 author SparkByExamples.com
 """
 
+import os
+import sys
+
+os.environ['PYSPARK_PYTHON'] = sys.executable
+os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
+
 from pyspark.sql import SparkSession
 
-spark = SparkSession.builder \
-                    .appName('SparkByExamples.com') \
-                    .getOrCreate()
+spark: SparkSession
+
+spark = SparkSession.builder.appName("SparkByExamples.com").getOrCreate();
+
+
+#
+# from pyspark.sql import SparkSession
+#
+# spark = SparkSession.builder \
+#                     .appName('SparkByExamples.com') \
+#                     .getOrCreate()
 
 data = [('James','Smith','M',3000),
-  ('Anna','Rose','F',4100),
-  ('Robert','Williams','M',6200), 
-]
+   ('Anna','Rose','F',4100),
+  ('Robert','Williams','M',6200)]
+
+# data = [('James','Smith','M',3000),
+#   ('Anna','Rose','F',4100),
+#   ('Robert','Williams','M',6200),
+# ]
 
 columns = ["firstname","lastname","gender","salary"]
-df = spark.createDataFrame(data=data, schema = columns)
+df = spark.createDataFrame(data=data,schema=columns)
 df.show()
+# columns = ["firstname","lastname","gender","salary"]
+# df = spark.createDataFrame(data=data, schema = columns)
+# df.show()
 
+print('salary1' not in df.columns)
 
-if 'salary1' not in df.columns:
-    print("aa")
-    
+# if 'salary1' not in df.columns:
+#     print("aa")
+#
 # Add new constanct column
 from pyspark.sql.functions import lit
-df.withColumn("bonus_percent", lit(0.3)) \
-  .show()
+df.withColumn("bonus_pct",lit(0.3))\
+    .show()
+# from pyspark.sql.functions import lit
+# df.withColumn("bonus_percent", lit(0.3)) \
+#   .show()
   
 #Add column from existing column
-df.withColumn("bonus_amount", df.salary*0.3) \
-  .show()
+# df.withColumn("bonus_amount", df.salary*0.3) \
+#   .show()
+
+df.withColumn("bonus_amount",df.salary*0.3)\
+    .show()
 
 #Add column by concatinating existing columns
 from pyspark.sql.functions import concat_ws
-df.withColumn("name", concat_ws(",","firstname",'lastname')) \
-  .show()
+df.withColumn('name',concat_ws(",",df.firstname, df.lastname))\
+    .show()
+# from pyspark.sql.functions import concat_ws
+# df.withColumn("name", concat_ws(",","firstname",'lastname')) \
+#   .show()
 
 #Add current date
 from pyspark.sql.functions import current_date
