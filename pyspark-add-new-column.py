@@ -63,36 +63,63 @@ df.withColumn("bonus_amount",df.salary*0.3)\
 from pyspark.sql.functions import concat_ws
 df.withColumn('name',concat_ws(",",df.firstname, df.lastname))\
     .show()
+
+
 # from pyspark.sql.functions import concat_ws
 # df.withColumn("name", concat_ws(",","firstname",'lastname')) \
 #   .show()
 
 #Add current date
-from pyspark.sql.functions import current_date
-df.withColumn("current_date", current_date()) \
-  .show()
 
+from pyspark.sql.functions import current_date
+
+df.withColumn("current_date",current_date())\
+    .show()
+
+# from pyspark.sql.functions import current_date
+# df.withColumn("current_date", current_date()) \
+#   .show()
 
 from pyspark.sql.functions import when
-df.withColumn("grade", \
-   when((df.salary < 4000), lit("A")) \
-     .when((df.salary >= 4000) & (df.salary <= 5000), lit("B")) \
-     .otherwise(lit("C")) \
-  ).show()
+
+df.withColumn("grade",\
+              when((df.salary<4000),lit("A"))\
+             .when((df.salary >=4000) & (df.salary <=5000),lit("B"))\
+             .otherwise(lit("C")) \
+              ).show()
+
+# from pyspark.sql.functions import when
+# df.withColumn("grade", \
+#    when((df.salary < 4000), lit("A")) \
+#      .when((df.salary >= 4000) & (df.salary <= 5000), lit("B")) \
+#      .otherwise(lit("C")) \
+#   ).show()
     
 # Add column using select
-df.select("firstname","salary", lit(0.3).alias("bonus")).show()
-df.select("firstname","salary", lit(df.salary * 0.3).alias("bonus_amount")).show()
-df.select("firstname","salary", current_date().alias("today_date")).show()
+
+df.select("firstname","salary",lit(0.3).alias(("bonus"))).show()
+df.select("firstname","salary",lit(df.salary*0.3).alias("bonus_amount")).show()
+df.select("firstname","salary",current_date().alias("today_date")).show()
+# df.select("firstname","salary", lit(0.3).alias("bonus")).show()
+# df.select("firstname","salary", lit(df.salary * 0.3).alias("bonus_amount")).show()
+# df.select("firstname","salary", current_date().alias("today_date")).show()
 
 #Add columns using SQL
+
 df.createOrReplaceTempView("PER")
 spark.sql("select firstname,salary, '0.3' as bonus from PER").show()
-spark.sql("select firstname,salary, salary * 0.3 as bonus_amount from PER").show()
-spark.sql("select firstname,salary, current_date() as today_date from PER").show()
-spark.sql("select firstname,salary, " +
-          "case salary when salary < 4000 then 'A' "+
+spark.sql("select firstname,salary,salary*0.3 as bonus_amount from PER").show()
+spark.sql("select firstname,salary,current_date() as today_date from PER").show()
+spark.sql("select firstname, salary, "+
+          "case salary when salary < 4000 then 'A' " +
           "else 'B' END as grade from PER").show()
+# df.createOrReplaceTempView("PER")
+# spark.sql("select firstname,salary, '0.3' as bonus from PER").show()
+# spark.sql("select firstname,salary, salary * 0.3 as bonus_amount from PER").show()
+# spark.sql("select firstname,salary, current_date() as today_date from PER").show()
+# spark.sql("select firstname,salary, " +
+#           "case salary when salary < 4000 then 'A' "+
+#           "else 'B' END as grade from PER").show()
 
 
 
